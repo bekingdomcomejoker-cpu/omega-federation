@@ -1,0 +1,52 @@
+whisper_init_from_file_with_params_no_state: loading model from '/data/data/com.termux/files/home/whisper.cpp/models/for-tests-ggml-medium.en.bin'
+whisper_init_with_params_no_state: use gpu    = 1
+whisper_init_with_params_no_state: flash attn = 1
+whisper_init_with_params_no_state: gpu_device = 0
+whisper_init_with_params_no_state: dtw        = 0
+whisper_init_with_params_no_state: devices    = 1
+whisper_init_with_params_no_state: backends   = 1
+whisper_model_load: loading model
+whisper_model_load: n_vocab       = 51864
+whisper_model_load: n_audio_ctx   = 1500
+whisper_model_load: n_audio_state = 1024
+whisper_model_load: n_audio_head  = 16
+whisper_model_load: n_audio_layer = 24
+whisper_model_load: n_text_ctx    = 448
+whisper_model_load: n_text_state  = 1024
+whisper_model_load: n_text_head   = 16
+whisper_model_load: n_text_layer  = 24
+whisper_model_load: n_mels        = 80
+whisper_model_load: ftype         = 1
+whisper_model_load: qntvr         = 0
+whisper_model_load: type          = 4 (medium)
+whisper_model_load: adding 1607 extra tokens
+whisper_model_load: n_langs       = 99
+whisper_model_load:          CPU total size =  1533.14 MB
+whisper_model_load: model size    =    0.00 MB
+whisper_model_load: WARN no tensors loaded from model file - assuming empty model for testing
+whisper_backend_init_gpu: device 0: CPU (type: 0)
+whisper_backend_init_gpu: no GPU found
+whisper_init_state: kv self size  =   50.33 MB
+whisper_init_state: kv cross size =  150.99 MB
+whisper_init_state: kv pad  size  =    6.29 MB
+whisper_init_state: compute buffer (conv)   =   28.57 MB
+whisper_init_state: compute buffer (encode) =   44.60 MB
+whisper_init_state: compute buffer (cross)  =    7.73 MB
+whisper_init_state: compute buffer (decode) =   98.20 MB
+
+system_info: n_threads = 4 / 8 | WHISPER : COREML = 0 | OPENVINO = 0 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | DOTPROD = 1 | OPENMP = 1 | REPACK = 1 | 
+
+main: processing '/data/data/com.termux/files/home/KINGDOM_ENGINE/transcripts/11540474141564835_1764177250590_proc.wav' (4691546 samples, 293.2 sec), 4 threads, 1 processors, 5 beams + best of 5, lang = en, task = transcribe, timestamps = 1 ...
+
+output_txt: saving output to '/data/data/com.termux/files/home/KINGDOM_ENGINE/transcripts/11540474141564835_1764177250590_accurate.txt'
+output_srt: saving output to '/data/data/com.termux/files/home/KINGDOM_ENGINE/transcripts/11540474141564835_1764177250590_accurate.srt'
+
+whisper_print_timings:     load time =   164.00 ms
+whisper_print_timings:     fallbacks =  50 p /   0 h
+whisper_print_timings:      mel time =  1735.18 ms
+whisper_print_timings:   sample time =   257.66 ms /   300 runs (     0.86 ms per run)
+whisper_print_timings:   encode time = 2117083.00 ms /    10 runs ( 211708.30 ms per run)
+whisper_print_timings:   decode time =  8878.07 ms /    33 runs (   269.03 ms per run)
+whisper_print_timings:   batchd time = 13817.46 ms /    81 runs (   170.59 ms per run)
+whisper_print_timings:   prompt time =     0.00 ms /     1 runs (     0.00 ms per run)
+whisper_print_timings:    total time = 2147350.25 ms

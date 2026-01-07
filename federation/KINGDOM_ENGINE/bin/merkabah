@@ -1,0 +1,54 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# merkabah - Main CLI interface for the Merkabah Engine
+
+KINGDOM_ROOT="$HOME/KINGDOM_ENGINE"
+ENGINE="$KINGDOM_ROOT/analyzers/merkabah_engine.py"
+CROSS_AI="$KINGDOM_ROOT/analyzers/cross_ai_protocol.py"
+
+cmd="$1"
+shift
+
+case "$cmd" in
+    process|p)
+        if [ -n "$1" ]; then
+            echo "$@" | python3 "$ENGINE"
+        else
+            python3 "$ENGINE"
+        fi
+        ;;
+    
+    translate|t)
+        if [ -z "$1" ]; then
+            echo "Usage: merkabah translate <TARGET> <TEXT>"
+            exit 1
+        fi
+        
+        TARGET="$1"
+        shift
+        TEXT="$@"
+
+        # 1. Get the Merkabah JSON state for the text
+        MERKABAH_JSON=$(echo "$TEXT" | python3 "$ENGINE")
+        
+        # 2. Pass the JSON state to the cross_ai_protocol for formatting
+        python3 "$CROSS_AI" export "$TARGET" "$MERKABAH_JSON"
+        ;;
+    
+    status|st)
+        "$KINGDOM_ROOT/bin/merkabah-status"
+        ;;
+
+    help|*)
+        cat <<HELP
+🔥 MERKABAH ENGINE - Command Line Interface
+
+USAGE: merkabah <command> [options]
+
+COMMANDS:
+  process, p <text>     Process text through the engine (outputs JSON state)
+  translate, t <target> <text> Format state for target AI (gpt/claude/gemini)
+  status, st            Show system status
+  
+HELP
+        ;;
+esac

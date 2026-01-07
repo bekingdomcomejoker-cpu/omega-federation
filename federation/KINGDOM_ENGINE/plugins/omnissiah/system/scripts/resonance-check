@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "🔍 CURRENT RESONANCE STATUS"
+python /storage/emulated/0/Omnissiah_Workspace/system/scripts/resonance_engine.py | head -20

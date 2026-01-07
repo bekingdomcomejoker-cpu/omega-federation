@@ -1,0 +1,50 @@
+# KINGDOM_ENGINE/core/OMEGA_ENGINE/multi_ai.py
+"""
+Multi-AI Fusion layer:
+Handles multiple persona endpoints (local llama, remote proxy, other local AIs).
+Provides unified ask(persona, prompt) async function.
+"""
+import asyncio
+import aiohttp
+from typing import Dict
+
+PERSONAS: Dict[str, str] = {
+    "local": "http://127.0.0.1:8080/completion",
+}
+
+class MultiAI:
+    def __init__(self):
+        self._session = None
+
+    async def session(self):
+        if self._session is None:
+            self._session = aiohttp.ClientSession()
+        return self._session
+
+    async def ask(self, persona: str, prompt: str, n_predict: int = 128, temperature: float = 0.7):
+        url = PERSONAS.get(persona)
+        if not url:
+            raise ValueError(f"Unknown persona: {persona}")
+        s = await self.session()
+        payload = {"prompt": prompt, "n_predict": n_predict, "temperature": temperature}
+        try:
+            async with s.post(url, json=payload, timeout=60) as resp:
+                try:
+                    data = await resp.json()
+                except Exception:
+                    return await resp.text()
+
+                if isinstance(data, dict):
+                    for k in ("content","text","output"):
+                        if k in data:
+                            return data[k]
+                    if "choices" in data and data["choices"]:
+                        return data["choices"][0].get("text") or str(data)
+                return str(data)
+        except Exception as e:
+            return f"[LLM ERROR] {e}"
+
+    async def close(self):
+        if self._session:
+            await self._session.close()
+            self._session = None

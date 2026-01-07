@@ -1,0 +1,30 @@
+#!/bin/bash
+echo "📱 OMNISSIAH DASHBOARD VIEWER"
+echo "=============================="
+
+# List all available sessions
+echo "Available tmux sessions:"
+tmux list-sessions
+
+echo ""
+echo "Attempting to attach to Omnissiah sessions..."
+
+# Try common session names
+if tmux has-session -t omnissiah 2>/dev/null; then
+    echo "🔗 Attaching to 'omnissiah' session..."
+    tmux attach -t omnissiah
+elif tmux has-session -t omnissiah_advanced 2>/dev/null; then
+    echo "🔗 Attaching to 'omnissiah_advanced' session..."  
+    tmux attach -t omnissiah_advanced
+elif tmux has-session -t omnissiah_main 2>/dev/null; then
+    echo "🔗 Attaching to 'omnissiah_main' session..."
+    tmux attach -t omnissiah_main
+else
+    echo "❌ No Omnissiah sessions found."
+    echo ""
+    echo "💡 Try starting the system first:"
+    echo "   ~/OmnissiahEngine/quick_start"
+    echo ""
+    echo "📊 Or check status:"
+    echo "   ~/OmnissiahEngine/check_status"
+fi

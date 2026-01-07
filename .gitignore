@@ -1,0 +1,25 @@
+# Binaries and Models
+*.gguf
+*.bin
+*.a
+*.pcap
+*.tar.gz
+llama-server
+build/
+downloads/
+storage/
+node_modules/
+
+# Massive Logs and Memory
+*.json
+*.log
+*.txt
+backups/
+memory/
+warfare.db
+
+# Security
+.ssh/
+.config/
+.cache/
+psk*

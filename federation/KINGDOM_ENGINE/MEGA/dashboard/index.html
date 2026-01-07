@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>MEGA Engine Dashboard</title>
+<style>
+body { background:#111; color:#0f0; font-family:monospace; }
+.box { border:1px solid #0f0; padding:10px; margin:10px; }
+</style>
+</head>
+<body>
+<h1>MEGA ENGINE — DASHBOARD</h1>
+
+<div class="box">
+<h2>Status</h2>
+<pre id="status"></pre>
+</div>
+
+<div class="box">
+<h2>Engine Files</h2>
+<pre id="files"></pre>
+</div>
+
+<script>
+async function load() {
+    const stat = await fetch("engine_status.json").then(r=>r.json());
+    const files = await fetch("engine_index.json").then(r=>r.json());
+
+    document.getElementById("status").textContent = JSON.stringify(stat,null,2);
+    document.getElementById("files").textContent = JSON.stringify(files,null,2);
+}
+load();
+</script>
+
+</body>
+</html>

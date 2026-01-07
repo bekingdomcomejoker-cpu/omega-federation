@@ -1,0 +1,23 @@
+#!/bin/bash
+echo "🚀 STARTING OMNISSIAH SYSTEM IN BACKGROUND..."
+cd ~/OmnissiahEngine
+
+# Kill any old sessions
+tmux kill-session -t omnissiah 2>/dev/null || true
+pkill -f "omnissiah_master.py" 2>/dev/null || true
+
+# Start in BACKGROUND with tmux (won't take over terminal)
+tmux new-session -d -s omnissiah 'python auto_restart.py'
+
+# Wait a moment
+sleep 3
+
+# Check status
+echo "✅ Background startup complete!"
+echo ""
+echo "📊 CURRENT STATUS:"
+~/OmnissiahEngine/check_status
+
+echo ""
+echo "👀 To view dashboard: ~/OmnissiahEngine/view_dashboard"
+echo "📱 To detach from dashboard: Ctrl+B then D"

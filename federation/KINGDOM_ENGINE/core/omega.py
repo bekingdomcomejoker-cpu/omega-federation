@@ -1,0 +1,1 @@
+/data/data/com.termux/files/home/growth_system/omega.py

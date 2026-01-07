@@ -1,0 +1,36 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+ENGINE_ROOT="$HOME/KINGDOM_ENGINE/MEGA/merkabah"
+LOG="$ENGINE_ROOT/logs/merkabah.log"
+
+cmd="$1"
+shift
+
+case "$cmd" in
+  scan)
+    echo "[SCAN]" >> "$LOG"
+    termux-clipboard-get 2>/dev/null
+    ;;
+  watch)
+    echo "[WATCH]" >> "$LOG"
+    last=""
+    while true; do
+      now=$(termux-clipboard-get 2>/dev/null)
+      if [ "$now" != "$last" ]; then
+        echo "[CHANGE] $now" | tee -a "$LOG"
+        last="$now"
+      fi
+      sleep 1
+    done
+    ;;
+  extract)
+    echo "[EXTRACT]" >> "$LOG"
+    echo "Extraction placeholder"
+    ;;
+  *)
+    echo "Merkabah CLI"
+    echo "  merkabah scan"
+    echo "  merkabah watch"
+    echo "  merkabah extract"
+    ;;
+esac

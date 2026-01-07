@@ -1,0 +1,161 @@
+#!/usr/bin/env python3
+import os
+import json
+import glob
+from pathlib import Path
+from datetime import datetime
+
+class ProjectScanner:
+    def __init__(self, root_dir="~"):
+        self.root_dir = Path(root_dir).expanduser()
+        self.projects = {}
+        self.categories = {
+            'dashboards': [],
+            'ai_systems': [],
+            'chat_systems': [],
+            'automation': [],
+            'omega_systems': [],
+            'web_servers': [],
+            'data_processors': [],
+            'misc_python': []
+        }
+    
+    def scan_directory(self):
+        print(f"🔍 Scanning {self.root_dir}...")
+        
+        # Look for Python files and project indicators
+        for py_file in self.root_dir.rglob("*.py"):
+            if self.should_scan_file(py_file):
+                self.analyze_file(py_file)
+        
+        # Look for specific project folders
+        self.scan_special_folders()
+        
+        return self.generate_report()
+    
+    def should_scan_file(self, file_path):
+        # Skip virtual environments and cache
+        skip_dirs = ['__pycache__', 'venv', '.venv', 'env', '.git']
+        return not any(skip in str(file_path) for skip in skip_dirs)
+    
+    def analyze_file(self, file_path):
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+            
+            project_info = {
+                'path': str(file_path),
+                'size': file_path.stat().st_size,
+                'modified': datetime.fromtimestamp(file_path.stat().st_mtime),
+                'lines': len(content.splitlines()),
+                'type': self.classify_file(content, file_path.name)
+            }
+            
+            # Extract key info
+            project_info.update(self.extract_key_info(content))
+            
+            # Categorize
+            self.categorize_project(project_info)
+            
+        except Exception as e:
+            print(f"❌ Could not read {file_path}: {e}")
+    
+    def classify_file(self, content, filename):
+        content_lower = content.lower()
+        
+        if any(keyword in content_lower for keyword in ['streamlit', 'st.', 'dashboard']):
+            return 'dashboard'
+        elif any(keyword in content_lower for keyword in ['flask', 'fastapi', 'server', 'app.run']):
+            return 'web_server'
+        elif any(keyword in content_lower for keyword in ['omega', 'covenant', 'spirit']):
+            return 'omega_system'
+        elif any(keyword in content_lower for keyword in ['chatgpt', 'openai', 'llm', 'ai']):
+            return 'ai_system'
+        elif any(keyword in content_lower for keyword in ['beautifulsoup', 'requests', 'scrap']):
+            return 'data_processor'
+        elif any(keyword in content_lower for keyword in ['schedule', 'cron', 'automate']):
+            return 'automation'
+        else:
+            return 'python_script'
+    
+    def extract_key_info(self, content):
+        info = {'imports': [], 'functions': [], 'description': ''}
+        
+        # Extract imports
+        for line in content.splitlines():
+            if line.strip().startswith(('import ', 'from ')):
+                info['imports'].append(line.strip())
+            elif line.strip().startswith('def '):
+                func_name = line.strip().split('def ')[1].split('(')[0]
+                info['functions'].append(func_name)
+        
+        # Look for description in comments
+        lines = content.splitlines()
+        for i, line in enumerate(lines[:10]):  # Check first 10 lines
+            if '#' in line and any(keyword in line.lower() for keyword in ['description', 'purpose', 'what']):
+                info['description'] = line.split('#')[-1].strip()
+                break
+        
+        return info
+    
+    def categorize_project(self, project_info):
+        file_type = project_info['type']
+        
+        if file_type == 'dashboard':
+            self.categories['dashboards'].append(project_info)
+        elif file_type == 'omega_system':
+            self.categories['omega_systems'].append(project_info)
+        elif file_type == 'ai_system':
+            self.categories['ai_systems'].append(project_info)
+        elif file_type == 'web_server':
+            self.categories['web_servers'].append(project_info)
+        elif file_type == 'data_processor':
+            self.categories['data_processors'].append(project_info)
+        elif file_type == 'automation':
+            self.categories['automation'].append(project_info)
+        else:
+            self.categories['misc_python'].append(project_info)
+    
+    def scan_special_folders(self):
+        """Scan for specific project folders we know about"""
+        special_folders = [
+            'omega-system', 'growth_system', 'omega_core', 'Omnissiah',
+            'OmnissiahEngine', 'Omnissiah_Workspace', 'aletheia_env'
+        ]
+        
+        for folder in special_folders:
+            folder_path = self.root_dir / folder
+            if folder_path.exists():
+                print(f"📁 Found special folder: {folder}")
+    
+    def generate_report(self):
+        report = {
+            'scan_time': datetime.now().isoformat(),
+            'total_projects_found': sum(len(projects) for projects in self.categories.values()),
+            'categories': self.categories
+        }
+        
+        # Print summary
+        print("\n" + "="*50)
+        print("📊 PROJECT INVENTORY SUMMARY")
+        print("="*50)
+        
+        for category, projects in self.categories.items():
+            print(f"\n{category.upper().replace('_', ' ')}: {len(projects)}")
+            for project in projects[:3]:  # Show first 3 of each category
+                print(f"  📄 {Path(project['path']).name}")
+                if project['description']:
+                    print(f"     📝 {project['description']}")
+        
+        return report
+
+# Run the scanner
+if __name__ == "__main__":
+    scanner = ProjectScanner("~")
+    report = scanner.scan_directory()
+    
+    # Save detailed report
+    with open("project_inventory.json", "w") as f:
+        json.dump(report, f, indent=2, default=str)
+    
+    print(f"\n✅ Detailed report saved to: project_inventory.json")

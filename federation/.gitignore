@@ -1,0 +1,27 @@
+# Models (never commit these)
+*.gguf
+*.bin
+*.safetensors
+
+# Large directories
+models/
+node_modules/
+.pnpm-store/
+dist/
+build/
+
+# Logs and temp
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp

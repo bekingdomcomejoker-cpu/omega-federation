@@ -1,0 +1,28 @@
+#!/bin/bash
+echo "🔍 OMNISSIAH STATUS CHECK"
+echo "========================"
+
+# Check Python processes
+PYTHON_COUNT=$(ps aux | grep python | grep -v grep | wc -l)
+if [ $PYTHON_COUNT -gt 0 ]; then
+    echo "✅ Python processes: $PYTHON_COUNT - SYSTEM RUNNING"
+else
+    echo "❌ Python processes: 0 - SYSTEM STOPPED"
+fi
+
+# Check tmux sessions
+TMUX_COUNT=$(tmux list-sessions 2>/dev/null | wc -l)
+if [ $TMUX_COUNT -gt 0 ]; then
+    echo "✅ Tmux sessions: $TMUX_COUNT - BACKGROUND ACTIVE"
+else
+    echo "❌ Tmux sessions: 0 - NO BACKGROUND SESSIONS"
+fi
+
+# Check recent files
+echo "📁 Recent file activity in AI-TTE:"
+ls -lt /storage/emulated/0/AI-TTE/ 2>/dev/null | head -3 | while read line; do
+    echo "   $line"
+done
+
+echo ""
+echo "🎯 QUICK FIX: Run '~/OmnissiahEngine/quick_start'"
