@@ -1,0 +1,18 @@
+#!/data/data/com.termux/files/usr/bin/bash
+LLAMA_BIN="$HOME/SOVEREIGN_HOME/termux-forge/llama.cpp/build/bin/llama-cli"
+# Pointing to the verified local armory paths
+NODE3_MODEL="$HOME/models/deepseek-coder-1.3b-instruct.Q4_K_M.gguf"
+NODE2_MODEL="$HOME/models/qwen2.5-1.5b-instruct-q4_k_m.gguf"
+SEED="$(cat ~/seed.txt)"
+AXIOMS="$(cat ~/axioms.txt)"
+PROMPT="$*"
+
+[ -z "$PROMPT" ] && echo "Usage: joinity \"task\"" && exit 1
+
+# Node 3: Implementer with Seed Prepend
+ANSWER=$("$LLAMA_BIN" -m "$NODE3_MODEL" -p "$SEED \n\n $AXIOMS \n\n TASK: $PROMPT \n\n OUTPUT:" -n 128 --temp 0.25 -t 6)
+
+# Node 2: Reflector with Seed Prepend
+VERDICT=$("$LLAMA_BIN" -m "$NODE2_MODEL" -p "$SEED \n\n $AXIOMS \n\n PROPOSED OUTPUT: $ANSWER \n\n VERDICT:" -n 64 --temp 0.15 -t 4)
+
+echo "$VERDICT" | grep -q APPROVE && echo "$ANSWER" || echo "❌ Rejected: $VERDICT"

@@ -1,0 +1,83 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# KINGDOM — Sovereign Local-First AI Router
+
+BASE_DIR="$HOME/.ask"
+LOG_DIR="$BASE_DIR/incidents"
+TIMESTAMP=$(date +"%Y-%m-%dT%H:%M:%S")
+
+mkdir -p "$LOG_DIR"
+
+PROMPT="$*"
+
+if [ -z "$PROMPT" ]; then
+  echo "Usage: kingdom \"your prompt here\""
+  exit 1
+fi
+
+log_incident () {
+  cat <<JSON > "$LOG_DIR/$(date +%s%N).json"
+{
+  "timestamp": "$TIMESTAMP",
+  "prompt": "$PROMPT",
+  "route": "$1",
+  "model": "$2",
+  "response": "$3"
+}
+JSON
+}
+
+# -------------------------------
+# 🔍 LOCAL MODEL DETECTION
+# -------------------------------
+
+LOCAL_MODEL=""
+LOCAL_RESPONSE=""
+
+if command -v ollama >/dev/null 2>&1; then
+  # Try default Ollama model
+  LOCAL_MODEL="gemma:2b"
+  if [ -n "$LOCAL_MODEL" ]; then
+    LOCAL_RESPONSE=$(echo "$PROMPT" | ollama run "$LOCAL_MODEL" 2>/dev/null)
+  fi
+
+elif command -v gemini_local >/dev/null 2>&1; then
+  LOCAL_MODEL="gemini_local"
+  LOCAL_RESPONSE=$(gemini_local "$PROMPT" 2>/dev/null)
+
+elif command -v llama >/dev/null 2>&1; then
+  LOCAL_MODEL="llama"
+  LOCAL_RESPONSE=$(llama "$PROMPT" 2>/dev/null)
+fi
+
+# -------------------------------
+# 🧠 ROUTING DECISION
+# -------------------------------
+
+if [ -n "$LOCAL_RESPONSE" ]; then
+  echo "$LOCAL_RESPONSE"
+  log_incident "local" "$LOCAL_MODEL" "$LOCAL_RESPONSE"
+  exit 0
+fi
+
+# -------------------------------
+# 🌐 REMOTE FALLBACK (GEMINI)
+# -------------------------------
+
+REMOTE_RESPONSE=$(gemini_remote "$PROMPT")
+
+echo "$REMOTE_RESPONSE"
+log_incident "remote" "gemini_remote" "$REMOTE_RESPONSE"
+exit 0
+
+# -------------------------------
+# 🦙 LLAMA.CPP GGUF DETECTION
+# -------------------------------
+
+LLAMA_BIN="$HOME/SOVEREIGN_HOME/termux-forge/llama.cpp/build/bin/llama-cli"
+GGUF_MODEL="$HOME/SOVEREIGN_HOME/termux-forge/llama.cpp/models/Phi-3-mini-4k-instruct-q4.gguf"
+
+if [ -x "$LLAMA_BIN" ] && [ -f "$GGUF_MODEL" ]; then
+  LOCAL_MODEL="llama.cpp:phi3-mini"
+  LOCAL_RESPONSE=$("$LLAMA_BIN" -m "$GGUF_MODEL" -p "$PROMPT" 2>/dev/null)
+fi
+

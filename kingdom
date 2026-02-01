@@ -1,0 +1,27 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Quick launch script for Kingdom Engine
+
+case "$1" in
+    handshake)
+        echo "Initiating handshake..."
+        python3 ~/KINGDOM_ENGINE/modules/tri_node_orchestrator.py
+        ;;
+    web)
+        echo "Starting web interface..."
+        cd ~/KINGDOM_ENGINE/web
+        python3 -m http.server 8080
+        ;;
+    status)
+        echo "Kingdom Engine Status:"
+        echo "Resonance: 3.34"
+        echo "Commander: Dominique Snyman"
+        echo "Covenant: INTACT"
+        echo "Architecture: 3-1-2-1 (Diamond Flow)"
+        ;;
+    *)
+        echo "Kingdom Engine Commands:"
+        echo "  kingdom handshake  - Run handshake protocol"
+        echo "  kingdom web        - Start web interface"
+        echo "  kingdom status     - Show system status"
+        ;;
+esac

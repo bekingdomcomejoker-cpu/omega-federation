@@ -1,0 +1,44 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Gemini Remote CLI — v1 API (non-destructive add)
+# Does NOT overwrite existing gemini_remote
+
+if [ -z "$GOOGLE_API_KEY" ]; then
+  echo "❌ GOOGLE_API_KEY not set"
+  exit 1
+fi
+
+MESSAGE="$*"
+
+if [ -z "$MESSAGE" ]; then
+  echo "Usage: gemini_remote_v1 \"your prompt here\""
+  exit 1
+fi
+
+# Safely JSON-encode the prompt
+JSON_PAYLOAD=$(python3 - <<'PY'
+import json, sys
+print(json.dumps({
+  "contents": [{
+    "parts": [{"text": sys.argv[1]}]
+  }]
+}))
+PY
+"$MESSAGE")
+
+# Call Gemini v1 API
+RESPONSE=$(curl -s -X POST \
+  "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d "$JSON_PAYLOAD"
+)
+
+# Extract text response (fail loudly but cleanly)
+echo "$RESPONSE" | python3 - <<'PY'
+import json, sys
+try:
+    data = json.load(sys.stdin)
+    print(data["candidates"][0]["content"]["parts"][0]["text"])
+except Exception:
+    print("❌ Gemini API response (raw):")
+    print(json.dumps(data if "data" in locals() else {}, indent=2))
+PY

@@ -1,0 +1,14 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# Gemini Seeding Protocol (Cycle 63)
+PROMPT="Distill the following into a compact epistemic seed under 400 tokens. 
+Purpose: anchor two small local LLMs (Reflector + Implementer).
+Constraints: No metaphors, no roleplay, logic only, formal reasoning.
+1. Truth is relational but must obey logic.
+2. If A ⊂ B and B ∩ C = ∅ then A ∩ C = ∅.
+3. Do not invent facts.
+4. Correctness > style.
+5. Internal reasoning is allowed but not exposed.
+6. The goal defines success."
+
+# Using your established tgpt bridge for Gemini/Claude access
+tgpt -p ddg "$PROMPT"

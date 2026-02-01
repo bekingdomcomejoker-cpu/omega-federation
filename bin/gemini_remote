@@ -1,0 +1,51 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+# Minimal Bash spine — do not add logic here
+if [ -z "$GOOGLE_API_KEY" ]; then
+  echo "❌ GOOGLE_API_KEY not set"
+  exit 1
+fi
+
+if [ "$#" -eq 0 ]; then
+  echo "Usage: gemini_remote \"your prompt here\""
+  exit 1
+fi
+
+# Hand off everything to Python (no Bash quote hell)
+python3 - "$GOOGLE_API_KEY" "$@" <<'PY'
+import sys, json, subprocess
+
+api_key = sys.argv[1]
+prompt = " ".join(sys.argv[2:])
+
+url = f"https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={api_key}"
+
+payload = {
+    "contents": [
+        {"parts": [{"text": prompt}]}
+    ]
+}
+
+try:
+    res = subprocess.run(
+        [
+            "curl", "-s", "-X", "POST", url,
+            "-H", "Content-Type: application/json",
+            "-d", json.dumps(payload)
+        ],
+        capture_output=True,
+        text=True,
+        check=False
+    )
+
+    data = json.loads(res.stdout)
+
+    if "candidates" in data:
+        print(data["candidates"][0]["content"]["parts"][0]["text"])
+    else:
+        print("❌ Gemini API error (raw):")
+        print(json.dumps(data, indent=2))
+
+except Exception as e:
+    print(f"❌ System error: {e}")
+PY

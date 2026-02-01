@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import json
+from openai import OpenAI
+
+BASE_DIR = os.path.expanduser("~/.ask")
+MEMORY_FILE = os.path.join(BASE_DIR, "memory.json")
+MAX_TURNS = 20  # rolling window
+
+def load_memory():
+    if not os.path.exists(MEMORY_FILE):
+        return []
+    with open(MEMORY_FILE, "r") as f:
+        return json.load(f)
+
+def save_memory(messages):
+    os.makedirs(BASE_DIR, exist_ok=True)
+    with open(MEMORY_FILE, "w") as f:
+        json.dump(messages[-MAX_TURNS:], f, indent=2)
+
+def main():
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        print("ERROR: OPENAI_API_KEY not set", file=sys.stderr)
+        sys.exit(1)
+
+    if len(sys.argv) < 2:
+        print("Usage: ask \"your message here\"")
+        sys.exit(1)
+
+    prompt = " ".join(sys.argv[1:])
+    memory = load_memory()
+
+    memory.append({"role": "user", "content": prompt})
+
+    client = OpenAI(api_key=api_key)
+
+    response = client.chat.completions.create(
+        model="gpt-5.2",
+        messages=memory
+    )
+
+    reply = response.choices[0].message.content
+    print(reply)
+
+    memory.append({"role": "assistant", "content": reply})
+    save_memory(memory)
+
+if __name__ == "__main__":
+    main()

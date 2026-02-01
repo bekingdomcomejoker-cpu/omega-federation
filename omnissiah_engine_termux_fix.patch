@@ -1,0 +1,38 @@
+diff --git a/core.py b/core.py
+index 0000000..1111111 100644
+--- a/core.py
++++ b/core.py
+@@ class EternalVow:
++    @staticmethod
++    def generate_vow_hash():
++        vow = EternalVow()
++        sealed = vow.get_sealed_covenant()
++        return sealed["signature"]
+
+diff --git a/vite.config.ts b/vite.config.ts
+index 0000000..2222222 100644
+--- a/vite.config.ts
++++ b/vite.config.ts
+@@
+ export default defineConfig({
++  css: {
++    transformer: 'postcss',
++  },
+ })
+
+diff --git a/postcss.config.js b/postcss.config.js
+index 0000000..3333333 100644
+--- a/postcss.config.js
++++ b/postcss.config.js
+@@
+ export default {
+-  plugins: {
+-    tailwindcss: {},
+-    autoprefixer: {},
+-    lightningcss: {},
+-  },
++  plugins: {
++    tailwindcss: {},
++    autoprefixer: {},
++  },
+ }

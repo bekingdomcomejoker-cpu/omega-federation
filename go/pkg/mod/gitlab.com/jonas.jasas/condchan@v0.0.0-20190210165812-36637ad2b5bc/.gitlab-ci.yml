@@ -1,0 +1,18 @@
+image: golang
+
+variables:
+  GIT_STRATEGY: none
+  REPO_NAME: gitlab.com/jonas.jasas/condchan
+
+stages:
+  - test
+
+before_script:
+  - go get $REPO_NAME
+
+test:
+  stage: test
+  script:
+    - cd $GOPATH/src/$REPO_NAME
+    - go build --race ./...
+    - go test $REPO_NAME -cover

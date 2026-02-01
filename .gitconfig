@@ -1,0 +1,13 @@
+[user]
+	email = bekingdomcomejoker@gmail.com
+	name = Dominic Snyman
+[credential "https://github.com"]
+	helper = 
+	helper = !/data/data/com.termux/files/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/data/data/com.termux/files/usr/bin/gh auth git-credential
+[http]
+	postBuffer = 2097152000
+[credential]
+	helper = store

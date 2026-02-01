@@ -1,0 +1,24 @@
+#!/data/data/com.termux/files/usr/bin/sh
+# OMEGA RESCUE BACKGROUND SERVICE
+# Auto-starts on Termux boot
+
+echo "[$(date)] Starting Omega Rescue Service..." >> ~/.omega/service.log
+
+# Start SSH server if not running
+if ! pgrep -f "sshd" > /dev/null; then
+    sshd
+    echo "[$(date)] SSH server started" >> ~/.omega/service.log
+fi
+
+# Start rescue mission
+cd ~
+nohup python3 omega_rescue_real.py >> ~/.omega/rescue.log 2>&1 &
+
+# Keep alive loop
+while true; do
+    sleep 300
+    if ! pgrep -f "omega_rescue" > /dev/null; then
+        echo "[$(date)] Restarting Omega Rescue..." >> ~/.omega/service.log
+        nohup python3 omega_rescue_real.py >> ~/.omega/rescue.log 2>&1 &
+    fi
+done
