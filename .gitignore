@@ -31,3 +31,19 @@ warfare.db
 psk*
 .cargo/
 target/
+
+# --- WORKSPACE ---
+WORKSPACE/
+KINGDOM_ENGINE/
+
+# --- Termux / Runtime ---
+.local/
+.cache/
+*.log
+
+# --- Build artifacts ---
+build/
+dist/
+*.o
+*.so
+*.bin
