@@ -1,49 +1,14 @@
-assets/external/
-*.db
-__pycache__/
-*.py[cod]
-.states
-.web
-# Binaries and Models
-*.gguf
-*.bin
-*.a
-*.pcap
-*.tar.gz
-llama-server
-build/
-downloads/
-storage/
-node_modules/
+# --- SECURITY ---
+.git-credentials
 
-# Massive Logs and Memory
-*.json
-*.log
-*.txt
-backups/
-memory/
-warfare.db
-
-# Security
-.ssh/
-.config/
-.cache/
-psk*
-.cargo/
-target/
-
-# --- WORKSPACE ---
-WORKSPACE/
-KINGDOM_ENGINE/
-
-# --- Termux / Runtime ---
+# --- USER / MACHINE SPECIFIC ---
+.bash_history
 .local/
 .cache/
-*.log
 
-# --- Build artifacts ---
-build/
-dist/
-*.o
-*.so
-*.bin
+# --- PACKAGE MANAGERS ---
+.npm/
+.cargo/
+
+# --- LOGS ---
+*.log
